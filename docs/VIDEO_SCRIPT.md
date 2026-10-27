@@ -39,7 +39,7 @@ Target length: 4:00 (hard limit 5:00). Each section lists what to **show** and w
 
 ## 1:05 - 1:30 Import
 
-**Show:** Back to the home page. **Import** `sample-notes.md`; the new doc opens. Back again, import `sample-brief.docx`. Point at the supported types and 5 MB limit shown next to the button.
+**Show:** Back to the home page. **Import** `sample-notes.md`; the new doc opens. Back again, import `sample-brief.docx`. Point at the supported types and 4 MB limit shown next to the button.
 
 **Say:** "Uploads come into the workflow as new, editable documents. Markdown keeps its headings and lists, and Word files work too. The supported types and the size limit are stated right in the UI, and anything unsupported gets a clear error instead of a silent failure."
 

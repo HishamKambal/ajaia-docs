@@ -3,7 +3,7 @@
 
 export const MAX_TITLE_LENGTH = 200;
 export const IMPORT_EXTENSIONS = [".txt", ".md", ".docx"] as const;
-export const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
+export const MAX_IMPORT_BYTES = 4 * 1024 * 1024;
 
 const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 365 * 24 * 3600],
@@ -40,6 +40,6 @@ export function validateImportFile(file: File): string | null {
   const ext = dot === -1 ? "" : file.name.slice(dot).toLowerCase();
   if (!(IMPORT_EXTENSIONS as readonly string[]).includes(ext)) return "Unsupported file type. Use .txt, .md or .docx.";
   if (file.size === 0) return "The file is empty.";
-  if (file.size > MAX_IMPORT_BYTES) return "File is too large (max 5 MB).";
+  if (file.size > MAX_IMPORT_BYTES) return "File is too large (max 4 MB).";
   return null;
 }

@@ -92,13 +92,26 @@ describe("fileToHtml: .docx", () => {
   });
 
   it("rejects a zip bomb before inflating it", async () => {
-    // ~51 MB of zeros deflates to well under the 5 MB upload limit.
+    // ~51 MB of zeros deflates to well under the 4 MB upload limit.
     const zip = new JSZip();
     zip.file("word/document.xml", Buffer.alloc(51 * 1024 * 1024));
     const bomb = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
     expect(bomb.byteLength).toBeLessThan(MAX_UPLOAD_BYTES);
 
     const err = await expectBadRequest(fileToHtml("bomb.docx", bomb));
+    expect(err.message).toMatch(/more than 50 MB/);
+  });
+
+  it("still rejects a zip bomb whose headers lie about its size", async () => {
+    const zip = new JSZip();
+    zip.file("word/document.xml", Buffer.alloc(51 * 1024 * 1024));
+    const bomb = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
+    // Rewrite the declared uncompressed size (central directory and local header) to 100 bytes.
+    const cd = bomb.lastIndexOf(Buffer.from([0x50, 0x4b, 0x01, 0x02]));
+    bomb.writeUInt32LE(100, cd + 24);
+    bomb.writeUInt32LE(100, 22);
+
+    const err = await expectBadRequest(fileToHtml("liar.docx", bomb));
     expect(err.message).toMatch(/more than 50 MB/);
   });
 });
@@ -118,7 +131,7 @@ describe("fileToHtml: rejections", () => {
     expect(err.message).toMatch(/empty/);
   });
 
-  it("rejects a file over 5 MB but accepts exactly 5 MB", async () => {
+  it("rejects a file over 4 MB but accepts exactly 4 MB", async () => {
     const err = await expectBadRequest(fileToHtml("big.txt", Buffer.alloc(MAX_UPLOAD_BYTES + 1, "a")));
     expect(err.message).toMatch(/too large/);
     await expect(fileToHtml("max.txt", Buffer.alloc(MAX_UPLOAD_BYTES, "a"))).resolves.toMatch(/^<p>a+<\/p>$/);

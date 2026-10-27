@@ -50,7 +50,7 @@ The owner is a column on `documents`, not a share row, so ownership can never be
 - **Identity:** mocked. The session cookie (`ajaia_uid`) is `httpOnly`, `sameSite=lax`, and `secure` in production. Every API route except `/api/users` and `/api/session` calls `requireUser()` and returns 401 without a session.
 - **Authorization:** `access.ts` defines owner = read / edit / rename / delete / share, editor = read / edit / rename, viewer = read. `documents.ts` loads the document with the caller's share row and checks the action before any read or write. Listing only returns documents the user owns or has a share on. Export uses the same read check.
 - **Content safety:** every write (editor save, create, import) passes through an allow-list sanitizer (`sanitize-html`): only the tags the editor supports, `dir` attributes, and `http(s)` / `mailto` links forced to `rel="noopener noreferrer nofollow"`. Scripts, styles and event handlers are stripped, which closes stored XSS.
-- **Input limits:** zod at the boundary, a 200-character title, 1 MB content (measured after sanitizing), 5 MB upload, a file-type allow-list (`.txt`, `.md`, `.docx`), and friendly errors for empty, corrupt or unsupported files.
+- **Input limits:** zod at the boundary, a 200-character title, 1 MB content (measured after sanitizing), 4 MB upload (under Vercel's 4.5 MB body limit), docx inflated with a 50 MB cap, a file-type allow-list (`.txt`, `.md`, `.docx`), and friendly errors for empty, corrupt or unsupported files.
 - **SQL:** parameterized queries only.
 
 ## Known limitations

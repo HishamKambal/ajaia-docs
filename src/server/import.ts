@@ -1,10 +1,12 @@
+import { inflateRawSync } from "node:zlib";
 import { marked } from "marked";
 import { HttpError, badRequest } from "./errors";
 
 // File import: converts an uploaded file into editor HTML. The caller then
 // creates a new document from it (and the repository sanitizes it).
 export const SUPPORTED_EXTENSIONS = [".txt", ".md", ".docx"] as const;
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+// 4 MB keeps uploads under Vercel's 4.5 MB request-body limit for serverless functions.
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -24,9 +26,14 @@ export function markdownToHtml(md: string): string {
   return marked.parse(md, { async: false, gfm: true });
 }
 
-// A 5 MB .docx can declare gigabytes of compressed XML (a "zip bomb"). Read the
-// ZIP central directory and reject oversized archives *before* mammoth inflates them.
+// A 4 MB .docx can hold gigabytes of highly compressed XML (a "zip bomb").
+// Before mammoth sees the file, inflate every entry ourselves with a hard output
+// cap. We measure what the data really expands to, rather than trusting the
+// sizes declared in the ZIP headers, which an attacker controls.
 export const MAX_DOCX_UNCOMPRESSED_BYTES = 50 * 1024 * 1024;
+
+const invalidDocx = () => badRequest("Couldn't read that .docx file. Is it a valid Word document?");
+const tooLargeDocx = () => badRequest("That .docx expands to more than 50 MB and can't be imported");
 
 export function assertDocxSizeIsSafe(buffer: Buffer): void {
   // End-of-central-directory record: signature 0x06054b50, within the last 64 KB + 22 bytes.
@@ -37,18 +44,37 @@ export function assertDocxSizeIsSafe(buffer: Buffer): void {
       break;
     }
   }
-  if (eocd === -1) throw badRequest("Couldn't read that .docx file. Is it a valid Word document?");
+  if (eocd === -1) throw invalidDocx();
 
   const entries = buffer.readUInt16LE(eocd + 10);
-  let offset = buffer.readUInt32LE(eocd + 16);
-  let total = 0;
+  let cd = buffer.readUInt32LE(eocd + 16);
+  let remaining = MAX_DOCX_UNCOMPRESSED_BYTES;
   for (let n = 0; n < entries; n++) {
-    if (offset + 46 > buffer.length || buffer.readUInt32LE(offset) !== 0x02014b50) {
-      throw badRequest("Couldn't read that .docx file. Is it a valid Word document?");
+    if (cd + 46 > buffer.length || buffer.readUInt32LE(cd) !== 0x02014b50) throw invalidDocx();
+    const method = buffer.readUInt16LE(cd + 10);
+    const compressedSize = buffer.readUInt32LE(cd + 20);
+    const local = buffer.readUInt32LE(cd + 42);
+    if (local + 30 > buffer.length || buffer.readUInt32LE(local) !== 0x04034b50) throw invalidDocx();
+    const dataStart = local + 30 + buffer.readUInt16LE(local + 26) + buffer.readUInt16LE(local + 28);
+    const data = buffer.subarray(dataStart, dataStart + compressedSize);
+
+    let actual: number;
+    if (method === 0) {
+      actual = data.length; // stored, not compressed
+    } else if (method === 8) {
+      try {
+        // Throws a RangeError as soon as the output would pass `remaining`.
+        actual = inflateRawSync(data, { maxOutputLength: Math.max(1, remaining) }).length;
+      } catch (err) {
+        if (err instanceof RangeError) throw tooLargeDocx();
+        throw invalidDocx();
+      }
+    } else {
+      throw invalidDocx(); // .docx only uses stored or deflate
     }
-    total += buffer.readUInt32LE(offset + 24); // declared uncompressed size
-    if (total > MAX_DOCX_UNCOMPRESSED_BYTES) throw badRequest("That .docx expands to more than 50 MB and can't be imported");
-    offset += 46 + buffer.readUInt16LE(offset + 28) + buffer.readUInt16LE(offset + 30) + buffer.readUInt16LE(offset + 32);
+    remaining -= actual;
+    if (remaining < 0) throw tooLargeDocx();
+    cd += 46 + buffer.readUInt16LE(cd + 28) + buffer.readUInt16LE(cd + 30) + buffer.readUInt16LE(cd + 32);
   }
 }
 
@@ -71,7 +97,7 @@ export function titleFromFilename(filename: string): string {
 
 export async function fileToHtml(filename: string, buffer: Buffer): Promise<string> {
   if (buffer.byteLength === 0) throw badRequest("The file is empty");
-  if (buffer.byteLength > MAX_UPLOAD_BYTES) throw badRequest("File is too large (max 5 MB)");
+  if (buffer.byteLength > MAX_UPLOAD_BYTES) throw badRequest("File is too large (max 4 MB)");
 
   switch (extensionOf(filename)) {
     case ".txt":

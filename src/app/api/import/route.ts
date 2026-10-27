@@ -9,9 +9,14 @@ import { requireUser } from "@/server/session";
 // Upload a .txt / .md / .docx file and turn it into a new editable document.
 export const POST = handle(async (req: Request) => {
   const user = await requireUser();
-  // Reject obviously oversized uploads before buffering the multipart body (+64 KB for form overhead).
-  if (Number(req.headers.get("content-length") ?? 0) > MAX_UPLOAD_BYTES + 64 * 1024) {
-    throw badRequest("File is too large (max 5 MB)");
+  // Fast-reject oversized uploads before buffering the multipart body (+64 KB for form overhead).
+  // Requests without a Content-Length (chunked) are still bounded by the platform's
+  // 4.5 MB body limit on Vercel and by the byte check in fileToHtml.
+  const declared = req.headers.get("content-length");
+  if (declared !== null) {
+    const length = Number(declared);
+    if (!Number.isFinite(length) || length < 0) throw badRequest("Invalid Content-Length header");
+    if (length > MAX_UPLOAD_BYTES + 64 * 1024) throw badRequest("File is too large (max 4 MB)");
   }
   const form = await req.formData().catch(() => {
     throw badRequest("Expected a multipart form upload");

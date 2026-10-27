@@ -38,7 +38,7 @@ Sign-in is mocked: pick a user on the start screen. No passwords.
 | Documents | Create, rename inline, edit, delete (owner), reopen. Separate **My documents** and **Shared with me** lists with owner name and role badge. |
 | Rich text | Bold, italic, underline, H1-H3, bullet and numbered lists, undo / redo (Tiptap v3). |
 | Saving | ~800 ms debounced autosave with a *Saving / Saved / Retry* status and an unsaved-changes guard. |
-| Import | Upload `.txt`, `.md` or `.docx` (max 5 MB). Each upload becomes a **new** editable document titled after the file. |
+| Import | Upload `.txt`, `.md` or `.docx` (max 4 MB). Each upload becomes a **new** editable document titled after the file. |
 | Sharing | Share by email as **Viewer** or **Editor**, change role, revoke. Owner-only. |
 | Permissions | Owner: read / edit / rename / delete / share. Editor: read / edit / rename. Viewer: read. Enforced in the server repository on every call. |
 | Export | Download as Markdown or standalone HTML. Anyone with read access can export. |
@@ -99,7 +99,7 @@ CI (GitHub Actions) runs typecheck, lint and tests on every push.
 
 | Limit | Value |
 |---|---|
-| Upload size | 5 MB |
+| Upload size | 4 MB (stays under Vercel's 4.5 MB function body limit) |
 | Document content | 1 MB (after sanitizing) |
 | Title | 200 characters |
 

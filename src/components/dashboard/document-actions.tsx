@@ -78,7 +78,7 @@ export function DocumentActions() {
         />
       </div>
       <p id={helpId} className="text-xs text-zinc-500 sm:text-end">
-        Supports .txt, .md, .docx up to 5 MB
+        Supports .txt, .md, .docx up to 4 MB
       </p>
       {error && <InlineError className="sm:justify-end">{error}</InlineError>}
     </div>

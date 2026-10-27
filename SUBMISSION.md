@@ -43,7 +43,7 @@ Sign-in is mocked: choose a user on the start screen, no password.
 - Mocked sign-in as three seeded users, with a user switcher
 - Create, rename, edit, autosave (~800 ms debounce, *Saving / Saved / Retry*), reopen; content persists in Postgres
 - Rich text: bold, italic, underline, H1-H3, bullet and numbered lists, undo / redo
-- Import `.txt`, `.md`, `.docx` (max 5 MB) into a new editable document
+- Import `.txt`, `.md`, `.docx` (max 4 MB) into a new editable document
 - Sharing by email as Viewer or Editor; change role; revoke
 - **My documents** vs **Shared with me**, with owner name and role badges
 - Server-enforced permissions: owner / editor / viewer; 404 for no access, 403 for insufficient role
