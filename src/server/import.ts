@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import { badRequest } from "./errors";
+import { HttpError, badRequest } from "./errors";
 
 // File import: converts an uploaded file into editor HTML. The caller then
 // creates a new document from it (and the repository sanitizes it).
@@ -24,7 +24,36 @@ export function markdownToHtml(md: string): string {
   return marked.parse(md, { async: false, gfm: true });
 }
 
+// A 5 MB .docx can declare gigabytes of compressed XML (a "zip bomb"). Read the
+// ZIP central directory and reject oversized archives *before* mammoth inflates them.
+export const MAX_DOCX_UNCOMPRESSED_BYTES = 50 * 1024 * 1024;
+
+export function assertDocxSizeIsSafe(buffer: Buffer): void {
+  // End-of-central-directory record: signature 0x06054b50, within the last 64 KB + 22 bytes.
+  let eocd = -1;
+  for (let i = buffer.length - 22; i >= Math.max(0, buffer.length - 65_557); i--) {
+    if (buffer.readUInt32LE(i) === 0x06054b50) {
+      eocd = i;
+      break;
+    }
+  }
+  if (eocd === -1) throw badRequest("Couldn't read that .docx file. Is it a valid Word document?");
+
+  const entries = buffer.readUInt16LE(eocd + 10);
+  let offset = buffer.readUInt32LE(eocd + 16);
+  let total = 0;
+  for (let n = 0; n < entries; n++) {
+    if (offset + 46 > buffer.length || buffer.readUInt32LE(offset) !== 0x02014b50) {
+      throw badRequest("Couldn't read that .docx file. Is it a valid Word document?");
+    }
+    total += buffer.readUInt32LE(offset + 24); // declared uncompressed size
+    if (total > MAX_DOCX_UNCOMPRESSED_BYTES) throw badRequest("That .docx expands to more than 50 MB and can't be imported");
+    offset += 46 + buffer.readUInt16LE(offset + 28) + buffer.readUInt16LE(offset + 30) + buffer.readUInt16LE(offset + 32);
+  }
+}
+
 export async function docxToHtml(buffer: Buffer): Promise<string> {
+  assertDocxSizeIsSafe(buffer);
   const mammoth = await import("mammoth");
   const { value } = await mammoth.convertToHtml({ buffer });
   return value;
@@ -52,7 +81,8 @@ export async function fileToHtml(filename: string, buffer: Buffer): Promise<stri
     case ".docx":
       try {
         return await docxToHtml(buffer);
-      } catch {
+      } catch (err) {
+        if (err instanceof HttpError) throw err;
         throw badRequest("Couldn't read that .docx file. Is it a valid Word document?");
       }
     default:

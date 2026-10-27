@@ -90,6 +90,17 @@ describe("fileToHtml: .docx", () => {
     const err = await expectBadRequest(fileToHtml("broken.docx", randomBytes(2048)));
     expect(err.message).toMatch(/valid Word document/);
   });
+
+  it("rejects a zip bomb before inflating it", async () => {
+    // ~51 MB of zeros deflates to well under the 5 MB upload limit.
+    const zip = new JSZip();
+    zip.file("word/document.xml", Buffer.alloc(51 * 1024 * 1024));
+    const bomb = await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
+    expect(bomb.byteLength).toBeLessThan(MAX_UPLOAD_BYTES);
+
+    const err = await expectBadRequest(fileToHtml("bomb.docx", bomb));
+    expect(err.message).toMatch(/more than 50 MB/);
+  });
 });
 
 describe("fileToHtml: rejections", () => {

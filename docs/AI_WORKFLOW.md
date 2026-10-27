@@ -41,6 +41,7 @@ The agents' own checks passed, but integrating and testing against the real depl
 |---|---|---|
 | Live `curl` pass against production | Sharing with `" SARA@ajaia.test "` returned 400. The repository normalized emails and its tests passed, but the API's zod schema rejected the stray whitespace *before* the request reached the repository. Unit tests on one layer couldn't see it. | Trim and lowercase in the schema (`src/server/validation.ts`), plus a regression test |
 | UI agent, first run on a clean machine | Local PGlite crashed with `ENOENT` because `.data/` didn't exist yet. My tests use in-memory mode, so they never exercised the file path. | `mkdirSync(dir, { recursive: true })` before opening PGlite |
+| Automated security review on commit (Claude Code security plugin) | A 5 MB `.docx` can declare gigabytes of compressed XML, a "zip bomb" that mammoth would inflate in memory. The upload limit only capped the *compressed* size. | Read the ZIP central directory and reject over 50 MB uncompressed *before* inflating; check `Content-Length` before buffering the form; regression test with a generated bomb |
 | UI agent | A `DATABASE_URL` left in my shell from another project made the app try a foreign Postgres. | Documented in the README: unset it for zero-setup local runs |
 
 ## 4. How I verified correctness, UX and reliability
