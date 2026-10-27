@@ -7,6 +7,7 @@ Built by **Hisham Mohammed Kambal** as the take-home for the *AI-Native Full Sta
 | | |
 |---|---|
 | **Live demo** | https://ajaia-docs-sigma-pearl.vercel.app |
+| **Repository** | https://github.com/HishamKambal/ajaia-docs |
 | **Walkthrough video** | see [`VIDEO_URL.txt`](VIDEO_URL.txt) |
 | **Submission index** | [`SUBMISSION.md`](SUBMISSION.md) |
 | **Stack** | Next.js 15.5 (App Router), React 19, TypeScript, Tailwind v4, Tiptap v3, Postgres (Neon) / PGlite, Vitest |

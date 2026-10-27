@@ -6,6 +6,7 @@
 | | |
 |---|---|
 | **Live app** | https://ajaia-docs-sigma-pearl.vercel.app |
+| **Repository** | https://github.com/HishamKambal/ajaia-docs |
 | **Walkthrough video** | VIDEO_URL_PLACEHOLDER (also in [`VIDEO_URL.txt`](VIDEO_URL.txt)) |
 
 ## Demo accounts
