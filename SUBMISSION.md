@@ -33,6 +33,7 @@ Sign-in is mocked: choose a user on the start screen, no password.
 | `docs/ai/AGENT_BRIEFS.md` | The scoped briefs given to the parallel AI agents |
 | `docs/ai/VERIFICATION_CHECKLIST.md` | Automated and manual verification checklist |
 | `docs/VIDEO_SCRIPT.md` | Script used for the walkthrough video |
+| `docs/screenshots/` | Screenshots of the live app: owner dashboard, editor, share dialog, editor's "Shared with me" view, viewer read-only mode |
 | `samples/` | Import test files: `sample-notes.md`, `sample-plain.txt`, `sample-arabic.md`, `sample-brief.docx` |
 | `VIDEO_URL.txt` | Link to the walkthrough video |
 | `SUBMISSION.md` | This file |
