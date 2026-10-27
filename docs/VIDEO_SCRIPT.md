@@ -47,11 +47,11 @@ Target length: 4:00 (hard limit 5:00). Each section lists what to **show** and w
 
 **Show:** In the imported doc, open **Share**. Add `bob@ajaia.test` as **Editor**, `sara@ajaia.test` as **Viewer**. Show the list with both entries and the role dropdown.
 
-**Say:** "Now I'll share this. Bob gets edit access and Sara gets view-only. As the owner I can change a role or revoke access at any time. Only owners see this dialog."
+**Say:** "Now I'll share this. Bob gets edit access and Sara gets view-only. As the owner I can change a role or revoke access at any time. Everyone else sees this list read-only; only the owner can change it."
 
 ## 2:00 - 2:30 Switch to Bob, then Sara
 
-**Show:** Switch user to **Bob**. Open **Shared with me**: the doc shows Alice as owner and an Editor badge. Type a line; it saves. Switch to **Sara**. Open the same doc: no toolbar, not editable, no share button.
+**Show:** Switch user to **Bob**. Open **Shared with me**: the doc shows Alice as owner and an Editor badge. Type a line; it saves. Switch to **Sara**. Open the same doc: "View only" banner, no toolbar, not editable. Click **Share** to show the access list is read-only for her.
 
 **Say:** "Switching to Bob: the document is under Shared with me, with the owner and his role. He can edit, and it saves. Now Sara: same document, but read-only. The important part is that this isn't just hidden buttons. The server enforces it. If Sara calls the API directly she gets a 403."
 
@@ -75,9 +75,9 @@ Target length: 4:00 (hard limit 5:00). Each section lists what to **show** and w
 
 ## 3:35 - 3:55 How AI supported the workflow
 
-**Show:** `docs/ai/AGENT_BRIEFS.md`, then the "Changed or rejected" table in `docs/AI_WORKFLOW.md`, then the terminal running `npm test` with the passing summary.
+**Show:** `docs/ai/AGENT_BRIEFS.md`, then the "What the integration gate caught" table in `docs/AI_WORKFLOW.md`, then the terminal running `npm test` with the passing summary (77 tests).
 
-**Say:** "I used Claude Code as a pair-programmer. Once the contract was done, I ran three agents in parallel, for UI, tests and docs, each with a scoped brief and the API frozen so they couldn't drift it. I didn't accept everything it suggested. It proposed SQLite, which would lose data on Vercel. It stored raw HTML, which was an XSS risk. And it ran the schema as one SQL string, which works on PGlite but breaks on real Postgres. I verified with typecheck, lint, the build, these tests running on a real Postgres engine, curl for the negative cases, and a manual pass as all three users."
+**Say:** "I used Claude Code as a pair-programmer. Once the backend contract was done, I ran three agents in parallel, for UI, tests and docs, each with a scoped brief and the API frozen so they couldn't drift it. Every agent reported green, but I don't treat that as done. My own gate found real bugs: sharing failed for an email with a stray space, because the API validation ran before the normalization the unit tests covered. And an automated security review flagged that a small Word file could be a zip bomb. My first fix trusted the zip headers, which an attacker controls, so I iterated until the server measures what the file really decompresses to. Each fix has a regression test. I verified with typecheck, lint, the build, 77 tests on a real Postgres engine, curl against production, and a manual pass as all three users."
 
 ## 3:55 - 4:05 Close
 
