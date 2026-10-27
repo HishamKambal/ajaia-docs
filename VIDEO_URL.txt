@@ -1,1 +1,3 @@
 Walkthrough video: VIDEO_URL_PLACEHOLDER
+
+Note: in the video I say "Ajaja" instead of "Ajaia" at least once. The code never made that mistake (git grep finds zero); only the presenter did. Sorry, Ajaia!

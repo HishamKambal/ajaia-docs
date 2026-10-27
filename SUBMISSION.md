@@ -9,6 +9,8 @@
 | **Repository** | https://github.com/HishamKambal/ajaia-docs |
 | **Walkthrough video** | VIDEO_URL_PLACEHOLDER (also in [`VIDEO_URL.txt`](VIDEO_URL.txt)) |
 
+> **A small apology about the video:** at least once I call the company "Ajaja". My mouth shipped before code review. The codebase got it right, though: `git grep -i ajaja` returns zero results, so the bug is confined to the human layer. It's **Ajaia**, and I've added a mental regression test so it won't come back.
+
 ## Demo accounts
 
 Sign-in is mocked: choose a user on the start screen, no password.
