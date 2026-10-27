@@ -7,7 +7,7 @@
 |---|---|
 | **Live app** | https://ajaia-docs-sigma-pearl.vercel.app |
 | **Repository** | https://github.com/HishamKambal/ajaia-docs |
-| **Walkthrough video** | VIDEO_URL_PLACEHOLDER (also in [`VIDEO_URL.txt`](VIDEO_URL.txt)) |
+| **Walkthrough video** | https://github.com/HishamKambal/ajaia-docs/releases/download/v1.0/ajaia-docs-walkthrough.mp4 (also in [`VIDEO_URL.txt`](VIDEO_URL.txt)) |
 
 > **A small apology about the video:** at least once I call the company "Ajaja". My mouth shipped before code review. The codebase got it right, though: `git grep -i ajaja -- src` returns zero results, so the bug is confined to the human layer. It's **Ajaia**, and I've added a mental regression test so it won't come back.
 
