@@ -9,7 +9,7 @@ Target length: 4:00 (hard limit 5:00). Each section lists what to **show** and w
 - [ ] Not signed in (clear the `ajaia_uid` cookie, or use a fresh incognito window).
 
 **Tabs and windows to open**
-1. Live app (https://ajaia-docs-seven-livid.vercel.app) on the sign-in screen
+1. Live app (https://ajaia-docs-sigma-pearl.vercel.app) on the sign-in screen
 2. Code editor with `src/server/access.ts` and `src/server/documents.ts` open (the `loadAuthorized` function visible)
 3. `docs/AI_WORKFLOW.md` (the "Changed or rejected" table) and `docs/ai/AGENT_BRIEFS.md`
 4. A terminal in the project folder, ready to run `npm test`

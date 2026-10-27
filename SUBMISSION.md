@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| **Live app** | https://ajaia-docs-seven-livid.vercel.app |
+| **Live app** | https://ajaia-docs-sigma-pearl.vercel.app |
 | **Walkthrough video** | VIDEO_URL_PLACEHOLDER (also in [`VIDEO_URL.txt`](VIDEO_URL.txt)) |
 
 ## Demo accounts

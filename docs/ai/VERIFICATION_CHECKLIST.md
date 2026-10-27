@@ -85,7 +85,7 @@ Set up: `B=http://localhost:3000`. Sign in by saving the cookie, e.g. `curl -c a
 - [ ] Import one `.docx` and export one `.md` on the live site
 - [ ] No errors in the browser console or Vercel function logs during the pass
 
-## Run log: 2026-10-27, production (https://ajaia-docs-seven-livid.vercel.app)
+## Run log: 2026-10-27, production (https://ajaia-docs-sigma-pearl.vercel.app)
 
 These were actually run, not just planned:
 
