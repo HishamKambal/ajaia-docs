@@ -1,0 +1,9 @@
+Meeting notes - weekly product sync
+
+Attendees: Alice, Bob, Sara.
+We reviewed the onboarding funnel and agreed that the first document a new user sees should explain sharing.
+
+Bob will prototype a simpler share dialog with an email field and a single role selector.
+Sara will collect feedback from the Riyadh pilot team, who write most of their documents in Arabic.
+
+Next sync is on Thursday. Characters like <tags> & ampersands should appear as plain text after import.

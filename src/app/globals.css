@@ -1,26 +1,174 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand: #2f54d6;
+  --color-brand-hover: #2443b4;
+  --color-brand-soft: #edf1fd;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Noto Sans Arabic",
+    Tahoma, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Keeps layout from shifting when a modal locks body scrolling. */
+  scrollbar-gutter: stable;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f6f7;
+  color: #18181b;
+  font-family: var(--font-sans);
+}
+
+/* ---------- Editor document styles (Tailwind preflight resets these) ---------- */
+
+.ProseMirror {
+  min-height: 55vh;
+  outline: none;
+  color: #27272a;
+  font-size: 1rem;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.ProseMirror > :first-child {
+  margin-block-start: 0;
+}
+
+.ProseMirror p,
+.ProseMirror ul,
+.ProseMirror ol,
+.ProseMirror blockquote,
+.ProseMirror pre {
+  margin-block: 0 0.85em;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  color: #18181b;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.ProseMirror h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-block: 1.2em 0.5em;
+}
+
+.ProseMirror h2 {
+  font-size: 1.45rem;
+  font-weight: 650;
+  margin-block: 1.1em 0.45em;
+}
+
+.ProseMirror h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-block: 1em 0.4em;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding: 0;
+}
+
+.ProseMirror ul {
+  list-style: disc;
+}
+
+.ProseMirror ul ul {
+  list-style: circle;
+}
+
+.ProseMirror ul ul ul {
+  list-style: square;
+}
+
+.ProseMirror ol {
+  list-style: decimal;
+}
+
+/* Indent on the item itself so a dir="rtl" item indents (and puts its marker) on the right. */
+.ProseMirror li {
+  margin-inline-start: 1.5em;
+  padding-inline-start: 0.2em;
+}
+
+.ProseMirror li > p {
+  margin-block: 0 0.25em;
+}
+
+.ProseMirror li > ul,
+.ProseMirror li > ol {
+  margin-block: 0.25em;
+}
+
+.ProseMirror blockquote {
+  border-inline-start: 3px solid #d4d4d8;
+  padding-inline-start: 1em;
+  color: #52525b;
+}
+
+.ProseMirror code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: #f4f4f5;
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+.ProseMirror pre {
+  direction: ltr;
+  text-align: start;
+  overflow-x: auto;
+  background: #18181b;
+  color: #f4f4f5;
+  border-radius: 8px;
+  padding: 0.85em 1em;
+  white-space: pre;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875em;
+  color: inherit;
+}
+
+.ProseMirror hr {
+  border: 0;
+  border-block-start: 1px solid #e4e4e7;
+  margin-block: 1.5em;
+}
+
+.ProseMirror a {
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ProseMirror strong {
+  font-weight: 650;
+}
+
+/* Placeholder for an empty, editable document (a lone empty paragraph). */
+.ProseMirror[contenteditable="true"] > p:only-child:has(> br.ProseMirror-trailingBreak:only-child) {
+  position: relative;
+}
+
+.ProseMirror[contenteditable="true"] > p:only-child:has(> br.ProseMirror-trailingBreak:only-child)::before {
+  content: "Start writing…";
+  position: absolute;
+  inset-inline-start: 0;
+  color: #a1a1aa;
+  pointer-events: none;
+}
+
+.ProseMirror-selectednode {
+  outline: 2px solid var(--color-brand);
 }
