@@ -4,8 +4,10 @@ I used AI as a fast pair-programmer and as a way to run independent work in para
 
 ## 1. Which AI tools I used
 
-- **Claude Code (Claude Opus)** in the Claude desktop app, as my primary pair-programmer.
-- **Claude Code subagents**, run in parallel from the lead session, each with a tightly scoped brief (see [`docs/ai/AGENT_BRIEFS.md`](ai/AGENT_BRIEFS.md)).
+- **Claude Code with Claude Opus 5.5** in the Claude desktop app, under my own Claude account, as the lead session and pair-programmer.
+- **Three Claude Code subagents (Opus 5.5)**, delegated from the lead session and run in parallel, each with a tightly scoped brief (see [`docs/ai/AGENT_BRIEFS.md`](ai/AGENT_BRIEFS.md)).
+- **Claude Code's security-review plugin**, which reviews every commit automatically. It flagged the zip-bomb issue below.
+- **Vercel CLI**, driven from the same session: it provisioned Neon Postgres and deployed to production, and the built-in browser ran smoke tests of the live app as each demo user.
 
 ### How I orchestrated it
 
