@@ -89,8 +89,8 @@ Set up: `B=http://localhost:3000`. Sign in by saving the cookie, e.g. `curl -c a
 
 These were actually run, not just planned:
 
-- `npm run typecheck`, `npm run lint`, `npm test` (76/76 passing) and `npm run build`: all green.
-- Zip-bomb `.docx` (51 MB of XML, under 4 MB compressed), including one with falsified size headers → 400, capped during inflation (regression tests)
+- `npm run typecheck`, `npm run lint`, `npm test` (77/77 passing) and `npm run build`: all green.
+- Zip-bomb `.docx` (51 MB of XML, under 4 MB compressed), including one with falsified size headers and one hiding entries behind a false entry count → 400, capped during inflation (regression tests)
 - `curl` permission matrix against production:
   - no session → 401
   - stranger → 404 before sharing and after revoke/delete

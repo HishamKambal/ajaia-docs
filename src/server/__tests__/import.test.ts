@@ -114,6 +114,16 @@ describe("fileToHtml: .docx", () => {
     const err = await expectBadRequest(fileToHtml("liar.docx", bomb));
     expect(err.message).toMatch(/more than 50 MB/);
   });
+
+  it("rejects an archive whose declared entry count hides entries", async () => {
+    const docx = await makeDocx();
+    const eocd = docx.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]));
+    docx.writeUInt16LE(1, eocd + 8); // entries on this disk
+    docx.writeUInt16LE(1, eocd + 10); // total entries: claim just one
+
+    const err = await expectBadRequest(fileToHtml("hidden.docx", docx));
+    expect(err.message).toMatch(/valid Word document/);
+  });
 });
 
 describe("fileToHtml: rejections", () => {

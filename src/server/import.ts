@@ -46,13 +46,25 @@ export function assertDocxSizeIsSafe(buffer: Buffer): void {
   }
   if (eocd === -1) throw invalidDocx();
 
-  const entries = buffer.readUInt16LE(eocd + 10);
-  let cd = buffer.readUInt32LE(eocd + 16);
+  const declaredEntries = buffer.readUInt16LE(eocd + 10);
+  const cdSize = buffer.readUInt32LE(eocd + 12);
+  const cdStart = buffer.readUInt32LE(eocd + 16);
+  // ZIP64 markers: Word never needs them, and they would let real sizes/offsets hide elsewhere.
+  if (declaredEntries === 0xffff || cdSize === 0xffffffff || cdStart === 0xffffffff) throw invalidDocx();
+  const cdEnd = cdStart + cdSize;
+  if (cdEnd > eocd) throw invalidDocx();
+
+  // Walk every central-directory record by signature (as JSZip does) rather than
+  // trusting the declared count, so no entry can be hidden from this check.
+  let cd = cdStart;
+  let seen = 0;
   let remaining = MAX_DOCX_UNCOMPRESSED_BYTES;
-  for (let n = 0; n < entries; n++) {
-    if (cd + 46 > buffer.length || buffer.readUInt32LE(cd) !== 0x02014b50) throw invalidDocx();
+  while (cd + 4 <= cdEnd && buffer.readUInt32LE(cd) === 0x02014b50) {
+    if (cd + 46 > cdEnd) throw invalidDocx();
+    seen++;
     const method = buffer.readUInt16LE(cd + 10);
     const compressedSize = buffer.readUInt32LE(cd + 20);
+    if (compressedSize === 0xffffffff) throw invalidDocx(); // ZIP64
     const local = buffer.readUInt32LE(cd + 42);
     if (local + 30 > buffer.length || buffer.readUInt32LE(local) !== 0x04034b50) throw invalidDocx();
     const dataStart = local + 30 + buffer.readUInt16LE(local + 26) + buffer.readUInt16LE(local + 28);
@@ -76,6 +88,8 @@ export function assertDocxSizeIsSafe(buffer: Buffer): void {
     if (remaining < 0) throw tooLargeDocx();
     cd += 46 + buffer.readUInt16LE(cd + 28) + buffer.readUInt16LE(cd + 30) + buffer.readUInt16LE(cd + 32);
   }
+  // Every byte of the directory must be accounted for, and the count must match what the file declares.
+  if (seen !== declaredEntries || cd !== cdEnd) throw invalidDocx();
 }
 
 export async function docxToHtml(buffer: Buffer): Promise<string> {
