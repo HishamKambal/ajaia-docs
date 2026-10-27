@@ -52,7 +52,9 @@ export function assertDocxSizeIsSafe(buffer: Buffer): void {
   // ZIP64 markers: Word never needs them, and they would let real sizes/offsets hide elsewhere.
   if (declaredEntries === 0xffff || cdSize === 0xffffffff || cdStart === 0xffffffff) throw invalidDocx();
   const cdEnd = cdStart + cdSize;
-  if (cdEnd > eocd) throw invalidDocx();
+  // The directory must end exactly at the EOCD. Otherwise JSZip adds an "extra bytes"
+  // offset and would read different structures than the ones validated here.
+  if (cdEnd !== eocd) throw invalidDocx();
 
   // Walk every central-directory record by signature (as JSZip does) rather than
   // trusting the declared count, so no entry can be hidden from this check.
